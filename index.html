@@ -3,352 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kivenioo Pixel Hide - لعبة التخفي والرسم</title>
+    <title>Kivenioo Pixels</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        body {
-            background-color: #0d1117;
-            color: #c9d1d9;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        /* حاوية اللعبة الأساسية */
-        #game-container {
-            width: 100%;
-            max-width: 1000px;
-            height: 90vh;
-            background: #161b22;
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(88, 166, 255, 0.2);
-            border: 1px solid #30363d;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* شاشات اللعبة (مخفية افتراضياً ما عدا الأولى) */
-        .screen {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            width: 100%;
-            padding: 40px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        h1 {
-            font-size: 3rem;
-            color: #58a6ff;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-align: center;
-        }
-
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            color: #8b949e;
-            text-align: center;
-        }
-
-        /* المدخلات (Inputs) */
-        .input-group {
-            width: 100%;
-            max-width: 400px;
-            margin-bottom: 15px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 15px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            color: #fff;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        input:focus, select:focus {
-            border-color: #58a6ff;
-            box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
-        }
-
-        /* الأزرار */
-        .btn {
-            width: 100%;
-            max-width: 400px;
-            padding: 15px;
-            background: #238636;
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn:hover {
-            background: #2ea043;
-            transform: translateY(-2px);
-        }
-
-        .btn-google {
-            background: #fff;
-            color: #111;
-        }
-
-        .btn-google:hover {
-            background: #f0f0f0;
-        }
-
-        .btn-secondary {
-            background: #21262d;
-            border: 1px solid #363b42;
-        }
-
-        .btn-secondary:hover {
-            background: #30363d;
-        }
-
-        /* واجهة اللعبة (Game UI) */
-        #game-ui {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .top-bar {
-            padding: 15px 20px;
-            background: #0d1117;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #30363d;
-        }
-
-        .canvas-area {
-            flex-grow: 1;
-            background: url('https://via.placeholder.com/1000x600/30363d/161b22?text=Game+Map+Background') center/cover;
-            position: relative;
-            cursor: crosshair;
-        }
-
-        .tools-bar {
-            padding: 15px;
-            background: #0d1117;
-            border-top: 1px solid #30363d;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .color-picker {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            cursor: pointer;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background: #0d1117; color: #fff; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        #game-container { width: 100%; max-width: 900px; height: 95vh; background: #161b22; border-radius: 20px; border: 1px solid #30363d; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .screen { display: none; flex-direction: column; justify-content: center; align-items: center; height: 100%; padding: 30px; text-align: center; }
+        .screen.active { display: flex; }
+        h1 { font-size: 2.5rem; color: #58a6ff; margin-bottom: 10px; }
+        p { color: #8b949e; margin-bottom: 20px; }
+        input, select { width: 100%; max-width: 350px; padding: 12px; margin-bottom: 15px; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 8px; font-size: 1rem; }
+        .row { display: flex; gap: 10px; width: 100%; max-width: 350px; margin-bottom: 15px; }
+        .row input { margin-bottom: 0; }
+        .btn { width: 100%; max-width: 350px; padding: 12px; background: #238636; color: #fff; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; font-weight: bold; margin-bottom: 10px; transition: 0.2s; }
+        .btn:hover { background: #2ea043; }
+        .btn-sec { background: #21262d; border: 1px solid #30363d; }
+        .btn-sec:hover { background: #30363d; }
+        .top-bar { padding: 15px; background: #0d1117; display: flex; justify-content: space-between; border-bottom: 1px solid #30363d; width: 100%; font-weight: bold; }
+        #gameCanvas { flex-grow: 1; background: #21262d; cursor: crosshair; }
+        .palette { padding: 10px; background: #0d1117; display: flex; justify-content: center; gap: 10px; border-top: 1px solid #30363d; width: 100%; }
+        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; }
+        #timerDisplay { color: #ff4757; font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
-    <div id="game-container">
-        
-        <!-- الشاشة الأولى: تسجيل الدخول -->
-        <div id="loginScreen" class="screen active">
-            <h1>Pixel Hide</h1>
-            <p>لعبة التخفي والرسم الجماعية</p>
-            <button class="btn btn-google" onclick="showScreen('profileScreen')">
-                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                تسجيل الدخول بحساب Google
-            </button>
-        </div>
+<div id="game-container">
 
-        <!-- الشاشة الثانية: إعداد الملف الشخصي -->
-        <div id="profileScreen" class="screen">
-            <h1>إعداد الحساب</h1>
-            <p>أدخل بياناتك لتبدأ اللعب</p>
-            
-            <div class="input-group">
-                <input type="text" id="playerName" placeholder="اسم اللاعب (Nickname)" required>
-            </div>
-            <div class="input-group">
-                <input type="number" id="playerAge" placeholder="العمر" value="16" required>
-            </div>
-            <div class="input-group">
-                <select id="playerCountry">
-                    <option value="Egypt" selected>مصر</option>
-                    <option value="KSA">السعودية</option>
-                    <option value="UAE">الإمارات</option>
-                    <option value="Morocco">المغرب</option>
-                    <option value="Other">دولة أخرى</option>
-                </select>
-            </div>
-
-            <button class="btn" onclick="saveProfile()">حفظ ومتابعة</button>
-        </div>
-
-        <!-- الشاشة الثالثة: اللوبي (إنشاء أو انضمام) -->
-        <div id="lobbyScreen" class="screen">
-            <h1>جاهز للعب؟</h1>
-            <p id="welcomeMsg"></p>
-
-            <button class="btn" onclick="createRoom()">إنشاء غرفة جديدة (Create Room)</button>
-            
-            <div style="display: flex; gap: 10px; width: 100%; max-width: 400px;">
-                <input type="text" id="roomCode" placeholder="كود الغرفة">
-                <button class="btn btn-secondary" style="width: auto;" onclick="joinRoom()">انضمام</button>
-            </div>
-        </div>
-
-        <!-- الشاشة الرابعة: واجهة اللعبة (Canvas) -->
-        <div id="gameScreen" class="screen" style="padding: 0;">
-            <div id="game-ui">
-                <div class="top-bar">
-                    <span id="gameRoomCode" style="font-weight: bold; color: #58a6ff;">Room: ---</span>
-                    <span id="roleText" style="background: #238636; padding: 5px 15px; border-radius: 20px;">الدور: Hider (متخفي)</span>
-                    <button class="btn btn-secondary" style="width: auto; padding: 5px 15px; margin: 0;" onclick="showScreen('lobbyScreen')">خروج</button>
-                </div>
-                
-                <!-- منطقة الرسم واللعب -->
-                <canvas id="gameCanvas" class="canvas-area"></canvas>
-
-                <!-- أدوات الرسم للمتخفي -->
-                <div class="tools-bar">
-                    <div class="color-picker" style="background: #ff4757;"></div>
-                    <div class="color-picker" style="background: #2ed573;"></div>
-                    <div class="color-picker" style="background: #1e90ff;"></div>
-                    <div class="color-picker" style="background: #ffa502;"></div>
-                    <div class="color-picker" style="background: #30363d;"></div>
-                    <span style="align-self: center; color: #8b949e; font-size: 0.9rem;">(هذه الأدوات لرسم شخصيتك ومحاكاة الحائط)</span>
-                </div>
-            </div>
-        </div>
-
+    <!-- 1. شاشة البداية -->
+    <div id="setupScreen" class="screen active">
+        <h1>Kivenioo Pixels</h1>
+        <p>أدخل بياناتك للبدء</p>
+        <input type="text" id="playerName" placeholder="اسم اللاعب (Nickname)">
+        <button class="btn" onclick="goToMenu()">دخول للوبي (Enter Lobby)</button>
     </div>
 
-    <script>
-        let currentUser = {};
+    <!-- 2. اللوبي واختيار السيرفر والمود -->
+    <div id="lobbyScreen" class="screen">
+        <h1>اللوبي (Lobby)</h1>
+        <p id="userGreeting"></p>
+        
+        <select id="serverSelect">
+            <option value="ME">سيرفر الشرق الأوسط (Middle East)</option>
+            <option value="EU">سيرفر أوروبا (Europe)</option>
+            <option value="US">سيرفر أمريكا (USA)</option>
+        </select>
 
-        // دالة التنقل بين الشاشات
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
+        <button class="btn" onclick="openSettings('virtual')">لعب مع الكمبيوتر (Play Virtual)</button>
+        <button class="btn btn-sec" onclick="openSettings('online')">إنشاء غرفة أونلاين (Create Room)</button>
+        
+        <div class="row" style="margin-top: 15px;">
+            <input type="text" id="roomCodeInput" placeholder="كود الغرفة للانضمام">
+            <button class="btn btn-sec" style="width: auto;" onclick="joinExistingRoom()">Join</button>
+        </div>
+    </div>
+
+    <!-- 3. إعدادات المباراة (كم متخفي وكم صياد) -->
+    <div id="settingsScreen" class="screen">
+        <h1>إعدادات المباراة (Match Settings)</h1>
+        <p>حدد أعداد اللاعبين</p>
+        <div class="row">
+            <input type="number" id="hidersCount" placeholder="عدد المتخفين (Hiders)" min="1" max="5" value="1">
+            <input type="number" id="huntersCount" placeholder="عدد الصيادين (Hunters)" min="1" max="5" value="1">
+        </div>
+        <select id="myChosenRole">
+            <option value="Hider">أريد أن ألعب كـ: متخفي (Hider)</option>
+            <option value="Hunter">أريد أن ألعب كـ: صياد (Hunter)</option>
+        </select>
+        <button class="btn" onclick="startMatch()">ابدأ المباراة (Start Match)</button>
+        <button class="btn btn-sec" onclick="switchScreen('lobbyScreen')">رجوع (Back)</button>
+    </div>
+
+    <!-- 4. شاشة اللعب -->
+    <div id="gameScreen" class="screen" style="padding:0;">
+        <div class="top-bar">
+            <span id="roomDisplay"></span>
+            <span id="timerDisplay">الوقت: 60</span>
+            <span id="roleDisplay" style="color: #58a6ff;"></span>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div class="palette" id="colorPalette">
+            <div class="color-dot" style="background: #ff4757;" onclick="currentColor='#ff4757'"></div>
+            <div class="color-dot" style="background: #2ed573;" onclick="currentColor='#2ed573'"></div>
+            <div class="color-dot" style="background: #1e90ff;" onclick="currentColor='#1e90ff'"></div>
+            <div class="color-dot" style="background: #ffffff;" onclick="currentColor='#ffffff'"></div>
+            <div class="color-dot" style="background: #000000;" onclick="currentColor='#000000'"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- إعدادات Firebase (ضع مفاتيحك هنا لاحقاً للأونلاين) ---
+    // يمكنك تركها فارغة الآن وسيعمل "اللعب مع الكمبيوتر" بامتياز!
+    /*
+    const firebaseConfig = { apiKey: "...", authDomain: "..." };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    */
+
+    let currentUser = {};
+    let currentGameMode = ""; // 'virtual' أو 'online'
+    let myRole = ""; 
+    let currentColor = "#ff4757";
+    let gamePhase = "hiding"; // 'hiding' ثم 'hunting'
+    let timeRemaining = 60;
+    let timerInterval;
+    let botInterval;
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function goToMenu() {
+        const name = document.getElementById('playerName').value.trim();
+        if(!name) return alert('أدخل اسمك أولاً!');
+        currentUser.name = name;
+        document.getElementById('userGreeting').innerText = `أهلاً ${currentUser.name}!`;
+        switchScreen('lobbyScreen');
+    }
+
+    function openSettings(mode) {
+        currentGameMode = mode;
+        switchScreen('settingsScreen');
+    }
+
+    function startMatch() {
+        myRole = document.getElementById('myChosenRole').value;
+        const server = document.getElementById('serverSelect').options[document.getElementById('serverSelect').selectedIndex].text;
+        
+        document.getElementById('roomDisplay').innerText = `السيرفر: ${server} | الوضع: ${currentGameMode === 'virtual' ? 'Bots' : 'Online'}`;
+        document.getElementById('roleDisplay').innerText = `دورك: ${myRole}`;
+        
+        switchScreen('gameScreen');
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // تنظيف الشاشة
+
+        startGameLogic();
+    }
+
+    function startGameLogic() {
+        // ضبط المرحلة الأولى: التخفي (60 ثانية)
+        gamePhase = "hiding";
+        timeRemaining = 60;
+        updateTimerUI();
+
+        // إخفاء الألوان عن الصياد
+        document.getElementById('colorPalette').style.display = (myRole === "Hunter") ? 'none' : 'flex';
+
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            updateTimerUI();
+
+            if(timeRemaining <= 0) {
+                if(gamePhase === "hiding") {
+                    // الانتقال لمرحلة الصيد (100 ثانية)
+                    gamePhase = "hunting";
+                    timeRemaining = 100;
+                    alert("انتهى وقت التخفي! ابدأ الصيد!");
+                } else {
+                    // انتهاء اللعبة
+                    clearInterval(timerInterval);
+                    clearInterval(botInterval);
+                    alert("انتهى الوقت! انتهت المباراة!");
+                    switchScreen('lobbyScreen');
+                }
+            }
+        }, 1000);
+
+        setupDrawing();
+
+        // تشغيل الذكاء الاصطناعي لو كنت تلعب ضد الكمبيوتر وأنت الصياد
+        if(currentGameMode === 'virtual' && myRole === 'Hunter') {
+            startBotsAI();
+        }
+    }
+
+    function updateTimerUI() {
+        const phaseName = gamePhase === "hiding" ? "التخفي" : "الصيد";
+        document.getElementById('timerDisplay').innerText = `${phaseName}: ${timeRemaining} ثانية`;
+    }
+
+    function setupDrawing() {
+        let isDrawing = false;
+        canvas.onmousedown = () => isDrawing = true;
+        canvas.onmouseup = () => isDrawing = false;
+        canvas.onmousemove = (e) => {
+            // لا ترسم إذا لم تكن ضاغطاً، أو إذا كنت صياداً، أو انتهى وقت التخفي
+            if(!isDrawing || myRole !== "Hider" || gamePhase !== "hiding") return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            renderDraw(x, y, currentColor);
             
-            if(screenId === 'gameScreen') {
-                initGameCanvas();
+            // هنا مستقبلاً كود Firebase لإرسال الرسمة للأونلاين
+        };
+    }
+
+    function renderDraw(x, y, color) {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function startBotsAI() {
+        // الكمبيوتر يمثل المتخفين، سيرسم نقاط عشوائية
+        botInterval = setInterval(() => {
+            if(gamePhase === "hiding") {
+                const randomX = Math.random() * canvas.width;
+                const randomY = Math.random() * canvas.height;
+                const colors = ['#ff4757', '#2ed573', '#1e90ff', '#ffffff'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                renderDraw(randomX, randomY, randomColor);
             }
-        }
+        }, 100); // سرعة رسم البوت
+    }
 
-        // حفظ بيانات اللاعب
-        function saveProfile() {
-            const name = document.getElementById('playerName').value;
-            const age = document.getElementById('playerAge').value;
-            const country = document.getElementById('playerCountry').value;
+    // دالة للانضمام للغرف مستقبلاً مع Firebase
+    function joinExistingRoom() {
+        alert("هذه الخاصية ستعمل عندما نضع مفاتيح Firebase الخاصة بك!");
+    }
+</script>
 
-            if (name.trim() === '') {
-                alert('يرجى كتابة اسمك!');
-                return;
-            }
-
-            currentUser = { name, age, country };
-            document.getElementById('welcomeMsg').innerText = `أهلاً بك يا ${name} (${country})`;
-            showScreen('lobbyScreen');
-        }
-
-        // إنشاء غرفة (وهمية حالياً للواجهة الأمامية)
-        function createRoom() {
-            const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-            document.getElementById('gameRoomCode').innerText = `Room: ${code}`;
-            showScreen('gameScreen');
-        }
-
-        // الانضمام لغرفة
-        function joinRoom() {
-            const code = document.getElementById('roomCode').value;
-            if (code.trim() === '') {
-                alert('يرجى إدخال كود الغرفة');
-                return;
-            }
-            document.getElementById('gameRoomCode').innerText = `Room: ${code.toUpperCase()}`;
-            showScreen('gameScreen');
-        }
-
-        // إعداد لوحة الرسم (Canvas)
-        function initGameCanvas() {
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            // ضبط مقاسات الـ Canvas بناءً على الشاشة
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-
-            let painting = false;
-
-            // أدوات رسم بسيطة لتجربة الفكرة
-            function startPosition(e) {
-                painting = true;
-                draw(e);
-            }
-            function endPosition() {
-                painting = false;
-                ctx.beginPath();
-            }
-            function draw(e) {
-                if (!painting) return;
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                ctx.lineWidth = 15;
-                ctx.lineCap = 'round';
-                ctx.strokeStyle = '#1e90ff'; // لون افتراضي
-                
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-            }
-
-            canvas.addEventListener('mousedown', startPosition);
-            canvas.addEventListener('mouseup', endPosition);
-            canvas.addEventListener('mousemove', draw);
-        }
-    </script>
 </body>
 </html>
